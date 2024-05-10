@@ -1,7 +1,9 @@
 #include <iostream>
 #include <iomanip>
-#include <stdlib.h>
 #include <time.h>
+#include <stdlib.h>
+#include <limits> 
+#include <ios>
 
 using namespace std;
 
@@ -39,15 +41,13 @@ void create(int r, int c, int sl)
             mt[i][j] = 'X';
             mine++;
 
-            for (int di = -1; di <= 1; ++di) {
-                for (int dj = -1; dj <= 1; ++dj) {
-                    if (di == 0 && dj == 0) continue;
-                    int ni = i + di;
-                    int nj = j + dj;
-                    if (ni >= 0 && ni < r && nj >= 0 && nj < c) {
-                        if (mt[ni][nj] == ' ') mt[ni][nj] += 17;
-                        else if (mt[ni][nj] != 'X') mt[ni][nj]++;
-                    }
+            for (int dx = -1; dx <= 1; ++dx) {
+                for (int dy = -1; dy <= 1; ++dy) {
+                    if (dx == 0 && dy == 0) continue;
+                    int ni = i + dx;
+                    int nj = j + dy;
+                    if (mt[ni][nj] == ' ') mt[ni][nj] += 17;
+                    else if (mt[ni][nj] != 'X') mt[ni][nj]++;
                 }
             }
         }
@@ -87,23 +87,22 @@ void clears()
     }
 }
 
-void reveal(int i, int j) {
-    if (t[i][j] == '*') {
+void reveal(int i, int j)
+{
+    if (t[i][j] == '*')
+    {
         t[i][j] = mt[i][j];
         counter++;
-
-        int directions[8][2] = {
-            {1, 0}, {-1, 0}, {0, 1}, {0, -1},
-            {-1, -1}, {1, 1}, {-1, 1}, {1, -1}
-        };
-
-        for (int d = 0; d < 8; ++d) {
-            int ni = i + directions[d][0];
-            int nj = j + directions[d][1];
-
-            if (ni >= 0 && ni < m && nj >= 0 && nj < n && t[ni][nj] == '*') {
-                reveal(ni, nj);
-            }
+        if (mt[i][j] == ' ')
+        {
+            reveal(i + 1, j);
+            reveal(i - 1, j);
+            reveal(i, j + 1);
+            reveal(i, j - 1);
+            reveal(i - 1, j - 1);
+            reveal(i + 1, j + 1);
+            reveal(i - 1, j + 1);
+            reveal(i + 1, j - 1);
         }
     }
 }
@@ -149,41 +148,54 @@ void answer(int r, int c)
         cout << '\n';
     }
 }
-
 int main()
 {
     cout << "                    " << char(196) << char(197) << char(198) << "  WELCOME TO MINESWEEPER :) " << char(198) << char(197) << char(196) << '\n';
-    //cout << '\n';
     cout << "                                 " << char(15) << "     " << char(15) << '\n';
     cout << "                                    " << char(15) << '\n';
     cout << "                                 " << char(15) << "     " << char(15) << '\n';
-    //cout << '\n';
     cout << "-------------------------------------------------------------------\n";
     cout << "                        " << char(16) << " " << char(16) << " " << char(16) << " " << char(16) << " " << char(16) << " RULES " << char(17) << " " << char(17) << " " << char(17) << " " << char(17) << " " << char(17);
-    
     cout << '\n';
-    //cout << "-------------------------------------------------------------------\n";
     cout << "-------------------------------------------------------------------\n";
     cout << '\n';
     cout << char(15) << " Don't click on squares containing mines :)\n";
     cout << char(15) << " Each number indicates how many mines are adjacent to that square.\n";
     cout << char(15) << " Aware of squares ya suspect contain mines to avoid clicking them.\n";
     cout << char(15) << " ( x - horizontal | y - vertical )\n";
-
     cout << '\n';
     cout << "                        " << char(32) << " " << char(32) << " " << char(32) << " " << char(32) << " " << char(4) << " ENJOY " << char(4) << " " << char(32) << " " << char(32) << " " << char(32) << " " << char(32);
     cout << '\n';
     cout << "-------------------------------------------------------------------\n";
-    //cout << "-------------------------------------------------------------------\n";
     cout << '\n';
     cout << '\n';
-    cout << "Please enter numbers ya prefer ;> \n";
+    cout << "Please enter numbers ya prefer :> \n";
     cout << '\n';
-    cout << char(15) << " Rows : "; cin >> m;
+    cout << char(15) << " Rows : ";
+    while (!(cin >> m) || m <= 0)
+    {
+        cout << " ... oops, again pls :< " << '\n' << " " << char(15) << " Rows : ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
     cout << '\n';
-    cout << char(15) << " Columns : "; cin >> n;
+    cout << char(15) << " Columns : ";
+    while (!(cin >> n) || n <= 0)
+    {
+        cout << " ... oops, again pls :< " << '\n';
+        cout << " " << char(15) << " Columns : ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
     cout << '\n';
-    cout << char(15) << " Mines : "; cin >> k;
+    cout << char(15) << " Mines : ";
+    while (!(cin >> k) || k <= 0 || k >= m * n)
+    {
+        cout << " ... oops, again pls :< " << '\n';
+        cout << " " << char(15) << " Mines : ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
     cout << '\n';
     for (int i = 0; i < m; i++)
     {
@@ -193,23 +205,39 @@ int main()
         }
     }
     create(m, n, k);
-    while (dead != true && won != true)
+    do
     {
-        clears();
-        print(m, n, t);
-        cout << "  " << char(4) << " (x, y) : ";
-        cin >> x >> y;
-        cout << '\n';
-        play(x, y, k);
-        if (dead)
+        while (dead != true && won != true)
         {
             clears();
-            cout << "YOU LOST :(\n";
+            print(m, n, t);
+            cout << "  " << char(4) << " (x, y) : ";
+            while (!(cin >> x >> y) || x < 0 || x >= m || y < 0 || y >= n)
+            {
+                cout << "  " << "oops, again pls :< " << '\n' << char(4) << " (x, y) : ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            cout << '\n';
+            play(x, y, k);
+            if (dead)
+            {
+                clears();
+                cout << "YOU LOST :(\n";
+            }
+            if (won)
+            {
+                cout << "YOU WIN :D\n";
+            }
         }
-        if (won)
-        {
-            cout << "YOU WIN :D\n";
-        }
-    }
-    if (dead) answer(m, n);
+        if (dead) answer(m, n);
+        cout << "\nDo you want to play again :33 ? (Y/N): ";
+        char choice;
+        cin >> choice;
+        if (choice != 'Y' && choice != 'y') break;
+        counter = 0;
+        dead = false;
+        won = false;
+    } while (true);
+    return 0;
 }
