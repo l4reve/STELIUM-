@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
-#include <time.h>
 #include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 
