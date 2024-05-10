@@ -1,5 +1,6 @@
-# 🚀 Minesweeper Game
+# 🚀💣🎮
 
+> A console application Minesweeper ;3
 
 ## Features
 
