@@ -15,7 +15,7 @@ bool dead = false;
 bool won = false;
 const int l = 30;
 
-void creatTableWithMine(int r, int c, int sl)
+void create(int r, int c, int sl)
 {
     int mine = 0, i, j;
     for (int i = 0; i < r; i++)
@@ -39,15 +39,12 @@ void creatTableWithMine(int r, int c, int sl)
             mt[i][j] = 'X';
             mine++;
 
-            for (int di = -1; di <= 1; ++di) 
-            {
-                for (int dj = -1; dj <= 1; ++dj) 
-                {
+            for (int di = -1; di <= 1; ++di) {
+                for (int dj = -1; dj <= 1; ++dj) {
                     if (di == 0 && dj == 0) continue;
                     int ni = i + di;
                     int nj = j + dj;
-                    if (ni >= 0 && ni < r && nj >= 0 && nj < c) 
-                    {
+                    if (ni >= 0 && ni < r && nj >= 0 && nj < c) {
                         if (mt[ni][nj] == ' ') mt[ni][nj] += 17;
                         else if (mt[ni][nj] != 'X') mt[ni][nj]++;
                     }
@@ -82,7 +79,7 @@ void print(int r, int c, char arr[100][100])
     }
 }
 
-void clearScreen()
+void clears()
 {
     for (int i = 0; i < l; i++)
     {
@@ -90,26 +87,21 @@ void clearScreen()
     }
 }
 
-void reveal(int i, int j) 
-{
-    if (t[i][j] == '*') 
-    {
+void reveal(int i, int j) {
+    if (t[i][j] == '*') {
         t[i][j] = mt[i][j];
         counter++;
 
-        int directions[8][2] =
-        {
+        int directions[8][2] = {
             {1, 0}, {-1, 0}, {0, 1}, {0, -1},
             {-1, -1}, {1, 1}, {-1, 1}, {1, -1}
         };
 
-        for (int d = 0; d < 8; ++d) 
-        {
+        for (int d = 0; d < 8; ++d) {
             int ni = i + directions[d][0];
             int nj = j + directions[d][1];
 
-            if (ni >= 0 && ni < m && nj >= 0 && nj < n && t[ni][nj] == '*') 
-            {
+            if (ni >= 0 && ni < m && nj >= 0 && nj < n && t[ni][nj] == '*') {
                 reveal(ni, nj);
             }
         }
@@ -200,10 +192,10 @@ int main()
             t[i][j] = '*';
         }
     }
-    creatTableWithMine(m, n, k);
+    create(m, n, k);
     while (dead != true && won != true)
     {
-        clearScreen();
+        clears();
         print(m, n, t);
         cout << "  " << char(4) << " (x, y) : ";
         cin >> x >> y;
@@ -211,7 +203,7 @@ int main()
         play(x, y, k);
         if (dead)
         {
-            clearScreen();
+            clears();
             cout << "YOU LOST :(\n";
         }
         if (won)
