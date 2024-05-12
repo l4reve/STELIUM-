@@ -53,34 +53,21 @@ void create(int r, int c, int sl)
 void print(int r, int c, char arr[100][100])
 {
     cout << "    ";
-
-    for (int i = 0; i < c; i++)
-    {
-        cout << setw(3) << i;
-    }
+    for (int i = 0; i < c; i++) cout << setw(3) << i;
     cout << '\n' << setw(7);
-    for (int i = 0; i < 3 * c - 1; i++)
-    {
-        cout << "_";
-    }
+    for (int i = 0; i < 3 * c - 1; i++) cout << "_";
     cout << '\n';
     for (int i = 0; i < r; i++)
     {
         cout << setw(3) << i << "|";
-        for (int j = 0; j < r; j++)
-        {
-            cout << setw(3) << arr[i][j];
-        }
+        for (int j = 0; j < r; j++) cout << setw(3) << arr[i][j];
         cout << '\n';
     }
 }
 
 void clears()
 {
-    for (int i = 0; i < l; i++)
-    {
-        cout << '\n';
-    }
+    for (int i = 0; i < l; i++) cout << '\n';
 }
 
 void rev(int i, int j)
@@ -91,14 +78,14 @@ void rev(int i, int j)
         counter++;
         if (mt[i][j] == ' ')
         {
-            rev(i + 1, j);
-            rev(i - 1, j);
-            rev(i, j + 1);
-            rev(i, j - 1);
-            rev(i - 1, j - 1);
-            rev(i + 1, j + 1);
-            rev(i - 1, j + 1);
-            rev(i + 1, j - 1);
+            rev(i+1, j);
+            rev(i-1, j);
+            rev(i, j+1);
+            rev(i, j-1);
+            rev(i-1, j-1);
+            rev(i+1, j+1);
+            rev(i-1, j+1);
+            rev(i+1, j-1);
         }
     }
 }
@@ -106,41 +93,24 @@ void rev(int i, int j)
 
 void play(int i, int j, int sl)
 {
-    if (mt[i][j] != 'X')
-    {
-        rev(i, j);
-    }
-    else
-    {
-        dead = true;
-    }
-    if (m * n - counter == sl)
-    {
-        won = true;
-    }
+    if (mt[i][j] != 'X') rev(i, j);
+    else dead = true;
+    if (m * n - counter == sl) won = true;
 }
 
 void answer(int r, int c)
 {
-    cout << endl << endl;
+    cout << '\n';
+    cout << '\n';
     cout << "    ";
-    for (int i = 0; i < c; i++)
-    {
-        cout << setw(3) << i;
-    }
+    for (int i = 0; i < c; i++) cout << setw(3) << i;
     cout << endl << setw(7);
-    for (int i = 0; i < 3 * c - 1; i++)
-    {
-        cout << "_";
-    }
+    for (int i = 0; i < 3 * c - 1; i++) cout << "_";
     cout << '\n';
     for (int i = 0; i < r; i++)
     {
         cout << setw(3) << i << "|";
-        for (int j = 0; j < r; j++)
-        {
-            cout << setw(3) << mt[i][j];
-        }
+        for (int j = 0; j < r; j++) cout << setw(3) << mt[i][j];
         cout << '\n';
     }
 }
