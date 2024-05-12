@@ -166,19 +166,68 @@ struct Minesweeper {
                 if (dead) {
                     clears();
                     cout << "YOU LOST :(\n";
+                    cout << "\nDo you want to see the full board? (yes/no): ";
+                    string choice;
+                    cin >> choice;
+                    if (choice == "yes") {
+                        answer(m, n);
+                    }
+                    break;
                 }
                 if (won) {
                     cout << "YOU WIN :D\n";
                 }
             }
-            if (dead) answer(m, n);
-            cout << "\nDo you want to play again? (Y/N): ";
-            char choice;
+            if (won) break;
+            cout << "\nDo you want to play again? (yes/no): ";
+            string choice;
             cin >> choice;
-            if (choice != 'Y' && choice != 'y') break;
-            counter = 0;
-            dead = false;
-            won = false;
+            if (choice == "no") {
+                cout << "\nDo you want to play a new game? (yes/no): ";
+                cin >> choice;
+                if (choice == "no") break;
+                else if (choice == "yes") {
+                    counter = 0;
+                    dead = false;
+                    won = false;
+                    cout << "Please enter numbers for the new game :> \n\n";
+                    cout << char(15) << " Rows : ";
+                    while (!(cin >> m) || m <= 0) {
+                        cout << " ... oops, again pls :< " << '\n' << " " << char(15) << " Rows : ";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    }
+                    cout << '\n';
+                    cout << char(15) << " Columns : ";
+                    while (!(cin >> n) || n <= 0) {
+                        cout << " ... oops, again pls :< " << '\n';
+                        cout << " " << char(15) << " Columns : ";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    }
+                    cout << '\n';
+                    cout << char(15) << " Mines : ";
+                    while (!(cin >> k) || k <= 0 || k >= m * n) {
+                        cout << " ... oops, again pls :< " << '\n';
+                        cout << " " << char(15) << " Mines : ";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    }
+                    cout << '\n';
+                    for (int i = 0; i < m; i++) {
+                        for (int j = 0; j < n; j++) {
+                            t[i][j] = '*';
+                        }
+                    }
+                    create(m, n, k);
+                }
+            }
+            else if (choice == "yes") {
+                counter = 0;
+                dead = false;
+                won = false;
+                create(m, n, k);
+            }
         } while (true);
     }
 };
