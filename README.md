@@ -8,7 +8,7 @@
 
 ## Features
 
-- **Customize**: Adjust your own board size and mines.
+- **Customize**: Adjust your own board size and mines. (preferable: 6x6 -> 30x30)
 - **Levels**: Versatile difficulty settings.
 
   > medium size
