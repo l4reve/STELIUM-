@@ -8,13 +8,9 @@
 using namespace std;
 
 char t[100][100];
-int counter = 0;
-int m, n, k;
-int x, y;
+int m, n, k, x, y, counter = 0;
 char mt[100][100];
-bool bomb;
-bool dead = false;
-bool won = false;
+bool bomb, dead = false, won = false;
 const int l = 30;
 
 void create(int r, int c, int sl)
