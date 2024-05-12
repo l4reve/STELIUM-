@@ -3,9 +3,6 @@
 > A console application Minesweeper ;3
 
 
-![Screenshot 2024-05-12 210757](https://github.com/l4reve/txtms/assets/143638421/910470d5-28cb-4cfe-ad93-58a465bf5192)
-
-
 ## Features
 
 - **Customize**: Adjust your own board size and mines. (preferable: 6x6 -> 30x30)
