@@ -87,7 +87,7 @@ void clears()
     }
 }
 
-void reveal(int i, int j)
+void rev(int i, int j)
 {
     if (t[i][j] == '*')
     {
@@ -95,14 +95,14 @@ void reveal(int i, int j)
         counter++;
         if (mt[i][j] == ' ')
         {
-            reveal(i + 1, j);
-            reveal(i - 1, j);
-            reveal(i, j + 1);
-            reveal(i, j - 1);
-            reveal(i - 1, j - 1);
-            reveal(i + 1, j + 1);
-            reveal(i - 1, j + 1);
-            reveal(i + 1, j - 1);
+            rev(i + 1, j);
+            rev(i - 1, j);
+            rev(i, j + 1);
+            rev(i, j - 1);
+            rev(i - 1, j - 1);
+            rev(i + 1, j + 1);
+            rev(i - 1, j + 1);
+            rev(i + 1, j - 1);
         }
     }
 }
@@ -112,7 +112,7 @@ void play(int i, int j, int sl)
 {
     if (mt[i][j] != 'X')
     {
-        reveal(i, j);
+        rev(i, j);
     }
     else
     {
@@ -231,7 +231,7 @@ int main()
             }
         }
         if (dead) answer(m, n);
-        cout << "\nDo you want to play again :33 ? (Y/N): ";
+        cout << "\nDo you want to play again? (Y/N): ";
         char choice;
         cin >> choice;
         if (choice != 'Y' && choice != 'y') break;
