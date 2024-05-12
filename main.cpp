@@ -223,6 +223,8 @@ struct Minesweeper {
                 }
             }
             else if (choice == "yes" || choice == "ye" || choice == "y" || choice == "Y" || choice == "YES") {
+                t[x][y] = mt[x][y] == 'X' ? 'X' : '*'; // Reveal X that lost
+                print(m, n, t);
                 counter = 0;
                 dead = false;
                 won = false;
