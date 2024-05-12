@@ -7,9 +7,8 @@
 
 using namespace std;
 
-char t[100][100];
+char t[100][100], mt[100][100];
 int m, n, k, x, y, counter = 0;
-char mt[100][100];
 bool bomb, dead = false, won = false;
 const int l = 30;
 
