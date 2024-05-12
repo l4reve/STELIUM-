@@ -113,6 +113,7 @@ struct Minesweeper {
         cout << char(15) << " Don't click on squares containing mines :)\n";
         cout << char(15) << " Each number indicates how many mines are adjacent to that square.\n";
         cout << char(15) << " Aware of squares ya suspect contain mines to avoid clicking them.\n";
+        cout << char(15) << " Ideal : (COLUMNS == ROWS) >0<\n";
         cout << char(15) << " ( x - horizontal | y - vertical )\n";
         cout << '\n';
         cout << "                        " << char(32) << " " << char(32) << " " << char(32) << " " << char(32) << " " << char(4) << " ENJOY " << char(4) << " " << char(32) << " " << char(32) << " " << char(32) << " " << char(32);
