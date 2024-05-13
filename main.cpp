@@ -147,7 +147,7 @@ void renderIntroductoryImage() {
 	SDL_RenderClear(gRenderer);
 
 	// Load and render the introductory image
-	SDL_Texture* introTexture = loadTexture("Background1.png");
+	SDL_Texture* introTexture = loadTexture("Image/Background1.png");
 	if (introTexture != nullptr) {
 		SDL_Rect introRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }; 
 		SDL_RenderCopy(gRenderer, introTexture, nullptr, &introRect);
