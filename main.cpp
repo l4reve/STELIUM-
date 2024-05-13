@@ -37,7 +37,7 @@ void flagManager();
 
 //Perform play again flag
 void playAgainManager(bool& quitGame);
-
+/*
 int main(int argc, char* args[])
 {
 	if (!init())
@@ -138,6 +138,96 @@ int main(int argc, char* args[])
 			}
 		}
 	}
+	close();
+	return 0;
+}
+*/
+void renderIntroductoryImage() {
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
+
+	// Load and render the introductory image
+	SDL_Texture* introTexture = loadTexture("Background1.png");
+	if (introTexture != nullptr) {
+		SDL_Rect introRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }; 
+		SDL_RenderCopy(gRenderer, introTexture, nullptr, &introRect);
+		SDL_DestroyTexture(introTexture); 
+	}
+	else {
+		cout << "Failed to load introductory image texture!\n";
+	}
+
+	SDL_RenderPresent(gRenderer);
+}
+
+int main(int argc, char* args[]) {
+	if (!init()) {
+		cout << "Failed to initialize!\n";
+		return 1;
+	}
+
+	if (!loadMedia()) {
+		cout << "Failed to load media!\n";
+		return 1;
+	}
+
+	SDL_Event e;
+	bool quit = false;
+	bool gameStarted = false; // Flag to indicate if the game has started
+
+	// Render the introductory image
+	renderIntroductoryImage();
+
+	// Main loop
+	while (!quit) {
+		// Start the game if the user clicked on the introductory image
+		if (!gameStarted) {
+			while (SDL_PollEvent(&e) != 0) {
+				if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) {
+					quit = true;
+				}
+				else if (e.type == SDL_MOUSEBUTTONDOWN) {
+					int mouseX, mouseY;
+					SDL_GetMouseState(&mouseX, &mouseY);
+					// Check if the click occurred within the bounds of the introductory image
+					if (mouseX >= 0 && mouseX < SCREEN_WIDTH && mouseY >= 0 && mouseY < SCREEN_HEIGHT) {
+						gameStarted = true; // Set the flag to start the game
+					}
+				}
+			}
+		}
+		else {
+			while (!quit) {
+				createTableWithMine();
+				while (!gameOver && !quit && !isWinning) {
+					while (SDL_PollEvent(&e) != 0) {
+						if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) {
+							quit = true;
+						}
+						for (int i = 0; i < ROW_SIZE; i++) {
+							for (int j = 0; j < COLUMN_SIZE; j++) {
+								gButtons[i][j].handleEvent(&e);
+							}
+						}
+						isWinning = checkWinning();
+					}
+					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+					SDL_RenderClear(gRenderer);
+					gBackgroundTexture.render(0, 0);
+					for (int i = 0; i < ROW_SIZE; i++) {
+						for (int j = 0; j < COLUMN_SIZE; j++) {
+							gButtons[i][j].render(i, j);
+						}
+					}
+					mineManager();
+					flagManager();
+					SDL_RenderPresent(gRenderer);
+				}
+				playAgainManager(quit);
+			}
+		}
+	}
+
 	close();
 	return 0;
 }
