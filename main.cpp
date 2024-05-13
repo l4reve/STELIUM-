@@ -13,135 +13,15 @@
 using namespace std;
 
 LButton gButtons[ROW_SIZE][COLUMN_SIZE];
-
-//Starts up SDL and creates window
 bool init();
-
-//Loads media
 bool loadMedia();
-
-//Frees media and shuts down SDL
 void close();
-
-//Initializes playground
 void createTableWithMine();
-
-//Check win flag
 bool checkWinning();
-
-//Render number of flag/mine left
 void mineManager();
-
-//Perform win/lose flag
 void flagManager();
-
-//Perform play again flag
 void playAgainManager(bool& quitGame);
-/*
-int main(int argc, char* args[])
-{
-	if (!init())
-	{
-		cout << "Failed to initialize!\n";
-	}
-	else
-	{
-		if (!loadMedia())
-		{
-			cout << "Failed to load media!\n";
-		}
-		else
-		{
-			bool quit = false;
-			bool gameStarted = false; // Flag to indicate if the game has started
-			SDL_Event e;
 
-			// Render the introductory image
-			IntroductoryImage introImage;
-			if (!introImage.loadIntroductoryImage())
-			{
-				cout << "Failed to load introductory image!\n";
-			}
-			else
-			{
-				introImage.render();
-				SDL_RenderPresent(gRenderer); // Update the screen
-
-				// Wait for the user to click on the introductory image to start the game
-				while (!gameStarted && !quit)
-				{
-					while (SDL_PollEvent(&e) != 0)
-					{
-						if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
-						{
-							quit = true;
-						}
-						else if (e.type == SDL_MOUSEBUTTONDOWN) // Check if the user clicks the mouse
-						{
-							int mouseX, mouseY;
-							SDL_GetMouseState(&mouseX, &mouseY);
-							int introImageX = 460;
-							int introImageY = 460;
-							int introImageWidth = 460;
-							int introImageHeight = 460;
-							// Check if the click occurred within the bounds of the introductory image
-							if (mouseX >= introImageX && mouseX < introImageX + introImageWidth &&
-								mouseY >= introImageY && mouseY < introImageY + introImageHeight)
-							{
-								gameStarted = true; // Set the flag to start the game
-							}
-						}
-					}
-					SDL_Delay(100); // Add a delay to reduce CPU load
-				}
-			}
-
-			// If the user didn't quit, proceed with the game
-			if (!quit)
-			{
-				while (!quit)
-				{
-					createTableWithMine();
-					while (!gameOver && !quit && !isWinning)
-					{
-						while (SDL_PollEvent(&e) != 0)
-						{
-							if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
-							{
-								quit = true;
-							}
-							for (int i = 0; i < ROW_SIZE; i++)
-							{
-								for (int j = 0; j < COLUMN_SIZE; j++)
-								{
-									gButtons[i][j].handleEvent(&e);
-								}
-							}
-							isWinning = checkWinning();
-						}
-						SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-						SDL_RenderClear(gRenderer);
-						gBackgroundTexture.render(0, 0);
-						for (int i = 0; i < ROW_SIZE; i++)
-						{
-							for (int j = 0; j < COLUMN_SIZE; j++)
-							{
-								gButtons[i][j].render(i, j);
-							}
-						}
-						mineManager();
-						flagManager();
-						SDL_RenderPresent(gRenderer);
-					}
-					playAgainManager(quit);
-				}
-			}
-		}
-	}
-	close();
-	return 0;
-}
-*/
 void renderIntroductoryImage() {
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
@@ -173,9 +53,7 @@ int main(int argc, char* args[]) {
 
 	SDL_Event e;
 	bool quit = false;
-	bool gameStarted = false; // Flag to indicate if the game has started
-
-	// Render the introductory image
+	bool gameStarted = false; 
 	renderIntroductoryImage();
 
 	// Main loop
@@ -236,10 +114,7 @@ int main(int argc, char* args[]) {
 
 bool init()
 {
-	//Initialization flag
 	bool success = true;
-
-	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 	{
 		cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << endl;
@@ -247,14 +122,12 @@ bool init()
 	}
 	else
 	{
-		//Set texture filtering to linear
 		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
 		{
 
 			cout << "Warning: Linear texture filtering not enabled!";
 		}
 
-		//Create window
 		gWindow = SDL_CreateWindow("Welcome to Minesweeper", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
@@ -263,7 +136,6 @@ bool init()
 		}
 		else
 		{
-			//Create vsynced renderer for window
 			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 			if (gRenderer == NULL)
 			{
@@ -272,22 +144,17 @@ bool init()
 			}
 			else
 			{
-				//Initialize PNG loading
 				int imgFlags = IMG_INIT_PNG;
 				if (!(IMG_Init(imgFlags) & imgFlags))
 				{
 					cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << endl;
 					success = false;
 				}
-
-				//Initialize SDL_mixer
 				if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 				{
 					cout << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << endl;
 					success = false;
 				}
-
-				//Initialize SDL_ttf
 				if (TTF_Init() == -1)
 				{
 					cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << endl;
@@ -302,10 +169,7 @@ bool init()
 
 bool loadMedia()
 {
-	//Loading success flag
 	bool success = true;
-
-	//Open the font
 	gGameOver = TTF_OpenFont("Font/DTM-Sans.ttf", 40);
 	if (gGameOver == NULL)
 	{
@@ -314,7 +178,6 @@ bool loadMedia()
 	}
 	else
 	{
-		//Render text
 		SDL_Color textColor = { 140, 140, 140 };
 		if (!gTextTexture.loadFromRenderedText(" D:", textColor))
 		{
@@ -331,7 +194,6 @@ bool loadMedia()
 	}
 	else
 	{
-		//Render text
 		SDL_Color playAgainWin = { 30, 100, 100 };
 		if (!gPlayAgainWinTexture.loadFromRenderedText("  ", playAgainWin))
 		{
@@ -348,7 +210,6 @@ bool loadMedia()
 	}
 	else
 	{
-		//Render text
 		SDL_Color playAgainLose = { 140, 140, 140 };
 		if (!gPlayAgainLoseTexture.loadFromRenderedText("  ", playAgainLose))
 		{
@@ -356,8 +217,6 @@ bool loadMedia()
 			success = false;
 		}
 	}
-
-	//Load scene
 	if (!gWinningTexture.loadFromFile("Image/Winner.png"))
 	{
 		cout << "Failed to load winning texture!\n";
@@ -368,8 +227,6 @@ bool loadMedia()
 		cout << "Failed to load background texture!\n";
 		success = false;
 	}
-
-	//Load sprites
 	if (!gButtonSpriteSheetTexture.loadFromFile("Image/Tiles.png"))
 	{
 		cout << "Failed to load sprites texture!\n";
@@ -377,7 +234,6 @@ bool loadMedia()
 	}
 	else
 	{
-		//Set sprites
 		for (int i = 0; i < BUTTON_SPRITE_TOTAL; i++)
 		{
 			gSpriteClips[i].x = i * 32;
@@ -385,7 +241,6 @@ bool loadMedia()
 			gSpriteClips[i].w = TILE_SIZE;
 			gSpriteClips[i].h = TILE_SIZE;
 		}
-		//Set buttons position
 		for (int i = 0; i < ROW_SIZE; i++)
 		{
 			for (int j = 0; j < COLUMN_SIZE; j++)
@@ -394,29 +249,24 @@ bool loadMedia()
 			}
 		}
 	}
-
-	//Load sound effects
 	winner = Mix_LoadMUS("Sounds/winner.wav");
 	if (winner == NULL)
 	{
 		cout << "Failed to load winner sound effect! SDL_mixer Error: " << Mix_GetError() << endl;
 		success = false;
 	}
-
 	loser = Mix_LoadMUS("Sounds/loser.wav");
 	if (loser == NULL)
 	{
 		cout << "Failed to load loser sound effect! SDL_mixer Error: " << Mix_GetError() << endl;
 		success = false;
 	}
-
 	click = Mix_LoadWAV("Sounds/click.wav");
 	if (click == NULL)
 	{
 		cout << "Failed to load click sound effect! SDL_mixer Error: " << Mix_GetError() << endl;
 		success = false;
 	}
-
 	return success;
 }
 
@@ -500,29 +350,15 @@ void flagManager()
 	//Check if win
 	if (isWinning && !gameOver)
 	{
-		//Update screen
 		SDL_RenderPresent(gRenderer);
-
-		//Delay loading screen
 		SDL_Delay(500);
-
-		//Play victory music
 		Mix_PlayMusic(winner, 0);
-
-		//Render winning scene
 		gWinningTexture.render(0, 0);
-
-		//Render playAgain
 		gPlayAgainWinTexture.render((SCREEN_WIDTH - gPlayAgainWinTexture.getWidth()) / 2, SCREEN_HEIGHT - gPlayAgainWinTexture.getHeight());
 	}
-
-	//Check if lose
 	if (gameOver)
 	{
-		//Render game over text
 		gTextTexture.render((SCREEN_WIDTH - gTextTexture.getWidth()) / 2, 0);
-
-		//Play losing music
 		Mix_PlayMusic(loser, 0);
 
 		for (int i = 0; i < ROW_SIZE; i++)
@@ -533,30 +369,21 @@ void flagManager()
 				gButtons[i][j].render(i, j);
 			}
 		}
-		//Render play again
 		gPlayAgainLoseTexture.render((SCREEN_WIDTH - gPlayAgainLoseTexture.getWidth()) / 2, SCREEN_HEIGHT - gPlayAgainLoseTexture.getHeight());
 	}
 }
 
 void playAgainManager(bool& quitGame)
 {
-	//Event handler
 	SDL_Event e;
-
-	//Handle events on queue
 	while (SDL_PollEvent(&e) != 0)
 	{
 		//User requests play again
 		if (e.key.keysym.sym == SDLK_s)
 		{
-			//Stop the music
 			Mix_HaltMusic();
-
-			//Recreate constants
 			countMineLeft = MINE_COUNT;
 			countTileLeft = ROW_SIZE * COLUMN_SIZE;
-
-			//Recreate flag
 			gameOver = false;
 			isWinning = false;
 			quitGame = false;
@@ -567,22 +394,17 @@ void playAgainManager(bool& quitGame)
 
 void close()
 {
-	//Free loaded images
 	gButtonSpriteSheetTexture.free();
 	gMineLeftTexture.free();
 	gBackgroundTexture.free();
 	gWinningTexture.free();
 	gTextTexture.free();
-
-	//Free global font
 	TTF_CloseFont(gGameOver);
 	TTF_CloseFont(gPlayAgainLose);
 	TTF_CloseFont(gPlayAgainWin);
 	gGameOver = NULL;
 	gPlayAgainLose = NULL;
 	gPlayAgainWin = NULL;
-
-	//Free the sound effects
 	Mix_FreeMusic(winner);
 	Mix_FreeMusic(loser);
 	Mix_FreeChunk(click);
@@ -590,7 +412,6 @@ void close()
 	loser = NULL;
 	click = NULL;
 
-	//Destroy window
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
