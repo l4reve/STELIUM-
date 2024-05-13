@@ -18,10 +18,8 @@
 
 ## Starting
 
-- **Installation**: Clone this repo, instal SDL2, compile, and run.
+- **Installation**: Clone this repo, instal SDL2 (make sure to link proper x86 include/lib), compile, and run.
 - **Dependencies**: C++, MS Visual Studio, SDL libs
 
-## Feedback and Contributions
-
-Feedback and contributions are welcome! Submit bug reports or pull requests to enhance the game! 🎮✨
+🎮✨
 
