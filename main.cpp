@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <string>
-#include "Texture.hpp"
+#include <cstring>
 #include "Button.hpp"
 #include <SDL_mixer.h>
 #include <SDL.h>
@@ -23,15 +23,24 @@ const int DISTANCE_BETWEEN = 4;
 const int BUTTON_SPRITE_TOTAL = 3;
 const int SCREEN_WIDTH = 400;
 const int SCREEN_HEIGHT = 400;
+LButton gButtons[ROW_SIZE][COLUMN_SIZE];
+#pragma once
+
+//Tile's constants
 const int TILE_SIZE = 32;
 const int BUTTON_SPRITE_TOTAL = 12;
+
+//Number of mines
 const int MINE_COUNT = 12;
+
+//Table's size
 const int ROW_SIZE = 10;
 const int COLUMN_SIZE = 10;
+
+//Screen dimension constants
 const int SCREEN_WIDTH = 460;
 const int SCREEN_HEIGHT = 460;
 const int DISTANCE_BETWEEN = (SCREEN_WIDTH - ROW_SIZE * TILE_SIZE) / 2;
-LButton gButtons[ROW_SIZE][COLUMN_SIZE];
 
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
@@ -85,6 +94,102 @@ bool checkWinning();
 void mineManager();
 void flagManager();
 void playAgainManager(bool& quitGame);
+
+
+class LTexture {
+public:
+    LTexture();
+    ~LTexture();
+    bool loadFromRenderedText(string textureText, SDL_Color textColor);
+    bool loadFromFile(string path);
+    void free();
+    void render(int x, int y, SDL_Rect* clip = NULL);
+    int getWidth();
+    int getHeight();
+
+private:
+    SDL_Texture* mTexture;
+    int mWidth, mHeight;
+};
+
+LTexture::LTexture() {
+    mTexture = NULL;
+    mWidth = 0;
+    mHeight = 0;
+}
+
+LTexture::~LTexture() {
+    free();
+}
+
+bool LTexture::loadFromRenderedText(string textureText, SDL_Color textColor) {
+    free();
+    SDL_Surface* textSurface = TTF_RenderText_Solid(gGameOver, textureText.c_str(), textColor);
+    if (textSurface == NULL) {
+        cout << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << endl;
+    }
+    else {
+        mTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+        if (mTexture == NULL) {
+            cout << "Unable to create texture from rendered text! SDL Error: " << SDL_GetError() << endl;
+        }
+        else {
+            mWidth = textSurface->w;
+            mHeight = textSurface->h;
+        }
+        SDL_FreeSurface(textSurface);
+    }
+    return mTexture != NULL;
+}
+
+bool LTexture::loadFromFile(string path) {
+    free();
+    SDL_Texture* newTexture = NULL;
+    SDL_Surface* loadedSurface = IMG_Load(path.c_str());
+    if (loadedSurface == NULL) {
+        cout << "Unable to load image " << path.c_str() << "! SDL_image Error: " << IMG_GetError() << endl;
+    }
+    else {
+        newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
+        if (newTexture == NULL) {
+            cout << "Unable to create texture from " << path.c_str() << "! SDL Error: " << SDL_GetError() << endl;
+        }
+        else {
+            mWidth = loadedSurface->w;
+            mHeight = loadedSurface->h;
+        }
+        SDL_FreeSurface(loadedSurface);
+    }
+    mTexture = newTexture;
+    return mTexture != NULL;
+}
+
+void LTexture::free() {
+    if (mTexture != NULL) {
+        SDL_DestroyTexture(mTexture);
+        mTexture = NULL;
+        mWidth = 0;
+        mHeight = 0;
+    }
+}
+
+void LTexture::render(int x, int y, SDL_Rect* clip) {
+    SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+    if (clip != NULL) {
+        renderQuad.w = clip->w;
+        renderQuad.h = clip->h;
+    }
+    SDL_RenderCopy(gRenderer, mTexture, clip, &renderQuad);
+}
+
+int LTexture::getWidth() {
+    return mWidth;
+}
+
+int LTexture::getHeight() {
+    return mHeight;
+}
+
 
 int main(int argc, char* args[])
 {
