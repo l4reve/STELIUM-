@@ -24,7 +24,6 @@ const int BUTTON_SPRITE_TOTAL = 3;
 const int SCREEN_WIDTH = 400;
 const int SCREEN_HEIGHT = 400;
 LButton gButtons[ROW_SIZE][COLUMN_SIZE];
-#pragma once
 
 //Tile's constants
 const int TILE_SIZE = 32;
