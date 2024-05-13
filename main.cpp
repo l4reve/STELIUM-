@@ -178,7 +178,7 @@ bool loadMedia()
 	}
 	else
 	{
-		SDL_Color textColor = { 140, 140, 140 };
+		SDL_Color textColor = { 255, 176, 189 };
 		if (!gTextTexture.loadFromRenderedText(" D:", textColor))
 		{
 			cout << "Failed to render text texture!\n";
@@ -210,7 +210,7 @@ bool loadMedia()
 	}
 	else
 	{
-		SDL_Color playAgainLose = { 140, 140, 140 };
+		SDL_Color playAgainLose = { 255, 176, 189 };
 		if (!gPlayAgainLoseTexture.loadFromRenderedText("  ", playAgainLose))
 		{
 			cout << "Failed to render text texture!\n";
@@ -330,7 +330,7 @@ void mineManager()
 	if (!gameOver && !isWinning)
 	{
 		//Set text color
-		SDL_Color textColor = { 140, 140, 140, 255 };
+		SDL_Color textColor = { 255, 176, 189, 255 };
 
 		//Erase the buffer
 		mineLeft.str("");
