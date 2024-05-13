@@ -371,7 +371,7 @@ void mineManager()
 
 		//Erase the buffer
 		mineLeft.str("");
-		mineLeft << "Mine left: " << countMineLeft;
+		mineLeft << " " << countMineLeft;
 		if (!gMineLeftTexture.loadFromRenderedText(mineLeft.str().c_str(), textColor))
 		{
 			cout << "Unable to render mine left texture!\n";
