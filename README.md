@@ -10,6 +10,8 @@
 
 1. **Objective**: Uncover all non-mine squares without triggering any mines.
 
+![Screenshot 2024-05-14 224426](https://github.com/l4reve/txtms/assets/143638421/9b7cc9b9-f8fe-4a8d-9bbb-0ce76f9deebe)
+
 ![Screenshot 2024-05-14 224005](https://github.com/l4reve/txtms/assets/143638421/06b2c6f3-b427-4f8b-9d90-86198661970e)
 
 2. **Gameplay**:
