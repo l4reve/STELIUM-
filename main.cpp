@@ -97,6 +97,7 @@ int main(int argc, char* args[]) {
 			// Game loop
 			while (!quit) {
 				createTableWithMine();
+				gameTimer.start();
 				while (!gameOver && !quit && !isWinning) {
 					while (SDL_PollEvent(&e) != 0) {
 						if (e.type == SDL_QUIT) {
