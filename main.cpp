@@ -48,7 +48,7 @@ void renderWinningImage() {
 	SDL_RenderClear(gRenderer);
 
 	// Load and render the introductory image
-	SDL_Texture* introTexture = loadTexture("Image/Winner.png");
+	SDL_Texture* introTexture = loadTexture("Image/WINNING.png");
 	if (introTexture != nullptr) {
 		SDL_Rect introRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 		SDL_RenderCopy(gRenderer, introTexture, nullptr, &introRect);
@@ -217,7 +217,7 @@ bool loadMedia()
 	gGameOver = TTF_OpenFont("Font/DTM-Sans.ttf", 55);
 	if (gGameOver == NULL)
 	{
-		cout << "Failed to load DTM-Sans font! SDL_ttf Error: " << TTF_GetError() << endl;
+		cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
 		success = false;
 	}
 	else
@@ -233,7 +233,7 @@ bool loadMedia()
 	gPlayAgainWin = TTF_OpenFont("Font/DTM-Sans.ttf", 55);
 	if (gPlayAgainWin == NULL)
 	{
-		cout << "Failed to load DTM-Sans font! SDL_ttf Error: " << TTF_GetError() << endl;
+		cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
 		success = false;
 	}
 	else
@@ -249,7 +249,7 @@ bool loadMedia()
 	gPlayAgainLose = TTF_OpenFont("Font/DTM-Sans.ttf", 55);
 	if (gPlayAgainLose == NULL)
 	{
-		cout << "Failed to load DTM-Sans font! SDL_ttf Error: " << TTF_GetError() << endl;
+		cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
 		success = false;
 	}
 	else
@@ -261,7 +261,7 @@ bool loadMedia()
 			success = false;
 		}
 	}
-	if (!gWinningTexture.loadFromFile("Image/Winner.png"))
+	if (!gWinningTexture.loadFromFile("Image/WINNING.png"))
 	{
 		cout << "Failed to load winning texture!\n";
 		success = false;
@@ -296,19 +296,19 @@ bool loadMedia()
 			}
 		}
 	}
-	winner = Mix_LoadMUS("Sounds/winner.wav");
+	winner = Mix_LoadMUS("Sounds/WIN.wav");
 	if (winner == NULL)
 	{
 		cout << "Failed to load winner sound effect! SDL_mixer Error: " << Mix_GetError() << endl;
 		success = false;
 	}
-	loser = Mix_LoadMUS("Sounds/loser.wav");
+	loser = Mix_LoadMUS("Sounds/LOST.wav");
 	if (loser == NULL)
 	{
 		cout << "Failed to load loser sound effect! SDL_mixer Error: " << Mix_GetError() << endl;
 		success = false;
 	}
-	click = Mix_LoadWAV("Sounds/click.wav");
+	click = Mix_LoadWAV("Sounds/CLCK.wav");
 	if (click == NULL)
 	{
 		cout << "Failed to load click sound effect! SDL_mixer Error: " << Mix_GetError() << endl;
