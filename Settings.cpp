@@ -35,19 +35,19 @@ bool Settings::loadMedia() {
     }
     if (!loadButtonTextures()) return false;
 
-    clickSound = Mix_LoadWAV("click.wav");
+    clickSound = Mix_LoadWAV("CLCK.wav");
     if (clickSound == nullptr) {
         std::cout << "Failed to load click sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
         return false;
     }
 
-    winnerSound = Mix_LoadWAV("winner.wav");
+    winnerSound = Mix_LoadWAV("WIN.wav");
     if (winnerSound == nullptr) {
         std::cout << "Failed to load winner sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
         return false;
     }
 
-    loserSound = Mix_LoadWAV("loser.wav");
+    loserSound = Mix_LoadWAV("LOST.wav");
     if (loserSound == nullptr) {
         std::cout << "Failed to load loser sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
         return false;
@@ -142,13 +142,13 @@ void Settings::toggleVolume() {
 void Settings::playSound(const std::string& soundFile) {
     if (volumeOn) {
         Mix_Chunk* sound = nullptr;
-        if (soundFile == "click.wav") {
+        if (soundFile == "CLCK.wav") {
             sound = clickSound;
         }
-        else if (soundFile == "winner.wav") {
+        else if (soundFile == "WIN.wav") {
             sound = winnerSound;
         }
-        else if (soundFile == "loser.wav") {
+        else if (soundFile == "LOST.wav") {
             sound = loserSound;
         }
         if (sound) {
