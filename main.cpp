@@ -9,13 +9,13 @@
 #include "Button.hpp"
 #include "introductory_image.hpp" 
 #include "Timer.hpp"
-
+#include "Settings.hpp"
 using namespace std;
 
 LButton gButtons[ROW_SIZE][COLUMN_SIZE];
 Timer gameTimer;
 TTF_Font* gFont = nullptr;
-
+Settings settings;
 bool init();
 bool loadMedia();
 void close();
@@ -25,6 +25,9 @@ void mineManager();
 void flagManager();
 void playAgainManager(bool& quitGame);
 void renderWinningImage();
+
+SDL_Rect settingsButton;
+SDL_Rect menuRect;
 
 void renderIntroductoryImage() {
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -48,7 +51,7 @@ void renderWinningImage() {
 	SDL_RenderClear(gRenderer);
 
 	// Load and render the introductory image
-	SDL_Texture* introTexture = loadTexture("Image/WINNING.png");
+	SDL_Texture* introTexture = loadTexture("Image/Winner.png");
 	if (introTexture != nullptr) {
 		SDL_Rect introRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 		SDL_RenderCopy(gRenderer, introTexture, nullptr, &introRect);
@@ -60,26 +63,38 @@ void renderWinningImage() {
 
 	SDL_RenderPresent(gRenderer);
 }
+bool initial() {
+	if (!settings.loadMedia()) {
+		std::cout << "Failed to load settings media!\n";
+		return false;
+	}
+	return true;
+}
+
+
 int main(int argc, char* args[]) {
 	if (!init()) {
-		cout << "Failed to initialize!\n";
+		std::cout << "Failed to initialize!\n";
 		return 1;
 	}
 
 	if (!loadMedia()) {
-		cout << "Failed to load media!\n";
+		std::cout << "Failed to load media!\n";
 		return 1;
 	}
 
 	SDL_Event e;
 	bool quit = false;
 	bool gameStarted = false;
+	bool newGame = false;
+
+	renderIntroductoryImage();
 
 	while (!quit) {
 		if (!gameStarted) {
-			renderIntroductoryImage();
-
 			while (SDL_PollEvent(&e) != 0) {
+				settings.handleEvent(&e, quit, newGame);
+
 				if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) {
 					quit = true;
 				}
@@ -88,18 +103,26 @@ int main(int argc, char* args[]) {
 					SDL_GetMouseState(&mouseX, &mouseY);
 					if (mouseX >= 0 && mouseX < SCREEN_WIDTH && mouseY >= 0 && mouseY < SCREEN_HEIGHT) {
 						gameStarted = true;
-						gameTimer.start(); // Start the timer when the game starts
+						gameTimer.start();
 					}
 				}
 			}
 		}
 		else {
-			// Game loop
 			while (!quit) {
 				createTableWithMine();
-				gameTimer.start();
 				while (!gameOver && !quit && !isWinning) {
 					while (SDL_PollEvent(&e) != 0) {
+						settings.handleEvent(&e, quit, newGame);
+
+						if (newGame) {
+							gameOver = false;
+							isWinning = false;
+							newGame = false;
+							gameTimer.start();
+							createTableWithMine();
+						}
+
 						if (e.type == SDL_QUIT) {
 							quit = true;
 						}
@@ -126,12 +149,12 @@ int main(int argc, char* args[]) {
 					}
 
 					mineManager();
-
 					flagManager();
 
 					isWinning = checkWinning();
 					if (isWinning) {
 						renderWinningImage();
+						settings.playSound("winner.wav");
 						break;
 					}
 
@@ -147,11 +170,19 @@ int main(int argc, char* args[]) {
 					}
 					else {
 						gameStarted = false;
-						gameTimer.stop();
-						gameTimer.reset(); 
+						//gameTimer.stop();
+						gameTimer.reset();
+						settings.playSound("loser.wav");
 					}
 				}
 			}
+		}
+
+		settings.render(settingsButton);
+
+		// Render the menu if it's open
+		if (settings.isMenuOpen()) {
+			settings.renderMenu(menuRect);
 		}
 	}
 
