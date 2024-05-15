@@ -1,3 +1,0 @@
-﻿  main.cpp
-D:\MSC\main.cpp(312,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  MSC.vcxproj -> D:\MSC\Debug\MSC.exe
