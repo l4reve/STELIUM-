@@ -1,20 +1,41 @@
-# 🚀💣🎮
+# STELIUM
 
-> Welcome to Minesweeper ;3
+> Welcome to STELIUM ;3
 
 << x86 MICROSOFT VISUAL STUDIO DEBUG >>
 
-![Screenshot 2024-05-14 212558](https://github.com/l4reve/txtms/assets/143638421/9e565d2c-4cdd-4572-bcc3-de09b2bfe409)
+![image](https://github.com/l4reve/txtms/assets/143638421/e9cae567-75f4-406d-979f-8bb8c57b352a)
 
-## Rules
+## About
+🎮🎮🎮
+> DIFFICULTY
+### Ez : 
 
-1. **Objective**: Uncover all non-mine squares without triggering any mines.
+- Hạ địch, score **100** để vào màn tiếp.
+- Gradually faster.
 
-![Screenshot 2024-05-14 224426](https://github.com/l4reve/txtms/assets/143638421/9b7cc9b9-f8fe-4a8d-9bbb-0ce76f9deebe)
+### Med : 
 
-![Screenshot 2024-05-14 224005](https://github.com/l4reve/txtms/assets/143638421/06b2c6f3-b427-4f8b-9d90-86198661970e)
+- Né meteor, bắn hạ địch để hồi máu
+- Để lên cấp độ cuối cùng, cần tích lũy được **500** điểm.
 
-2. **Gameplay**: Clone all of files in this repo
+### Hard : 
+
+- Same objectives.
+- No health gain làm tăng độ khó của trò chơi.
+- Để giành chiến thắng, người chơi cần đạt được **1500** điểm.
+
+### END
+
+- Người chơi có thể chọn chơi lại bằng cách nhấn "PLAY AGAIN" hoặc thoát bằng "QUIT"
+
+![image](https://github.com/l4reve/txtms/assets/143638421/72c088d6-9807-4d7f-b136-71ce35a3ca0b)
+
+🎮🎮🎮
+
+## Gameplay / Installation
+> (In ENG - but understandable or you can you gg trans)
+
 
 - Make an empty project in visual studio
 - Goto folder which has project file(.vcxproj) and then paste all of files we cloned
@@ -26,15 +47,7 @@
 - Go to Project -> properties -> Configuration Properties -> Library Directories
 - Add SDL2_mixer-devel-your version-VC/lib/x86, SDL2_mixer-devel-your version-VC/lib/x86, SDL2_image-your version/lib/x86, SDL2-devel-your version-VC/lib/x86
 
-
-3. **Winning**: Clear all non-mine squares to triumph!
-
-![Screenshot 2024-05-14 224122](https://github.com/l4reve/txtms/assets/143638421/c2470600-a1a6-4e96-9c75-46bee08b6345)
-
-## Starting
-
-- **Installation**: Clone this repo, instal SDL2 (make sure to link proper x86 include/lib), compile, and run.
-- **Dependencies**: C++, MS Visual Studio, SDL libs
+> AGAIN, HAVE FUN :D
 
 🎮✨
 
