@@ -38,8 +38,7 @@
 
 
 - Make an empty project in visual studio
-- Goto folder which has project file(.vcxproj) and then paste all of files we cloned
-- Add source files and header files
+- Add source files all i posted
 - In visual studio, go to Project -> properties -> Linker -> Input -> Additional dependencies
 - Add SDL2_ttf.lib , SDL2_image.lib , SDL2main.lib , SDL2_mixer.lib , SDL2.lib
 - Go to Project -> properties -> Configuration Properties -> Include Directories
