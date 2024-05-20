@@ -9,6 +9,9 @@
 ## About
 🎮🎮🎮
 > DIFFICULTY
+
+> Người dùng chỉ cần sử dụng chuột để di chuyển
+
 ### Ez : 
 
 - Hạ địch, score **100** để vào màn tiếp.
