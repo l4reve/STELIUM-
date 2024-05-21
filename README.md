@@ -4,7 +4,7 @@
 
 << x86 MICROSOFT VISUAL STUDIO DEBUG >>
 
-![image](https://github.com/l4reve/txtms/assets/143638421/e9cae567-75f4-406d-979f-8bb8c57b352a)
+![image](https://github.com/l4reve/txtms/assets/143638421/cc15596f-6da2-42a7-a542-03cf96e449bf)
 
 ## About
 🎮🎮🎮
@@ -12,6 +12,8 @@
 
 > Người dùng chỉ cần sử dụng chuột để di chuyển
 
+- 5+ MAP OPTIONS
+  
 ### Ez : 
 
 - Hạ địch, score **100** để vào màn tiếp.
