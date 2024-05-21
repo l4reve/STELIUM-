@@ -286,9 +286,19 @@ void handleInput(SDL_Event& e, bool& quit, Player& player, GameState& gameState)
             // Ensure the player stays within the screen bounds
             if (player.rect.x < 0) player.rect.x = 0;
             if (player.rect.x > SCREEN_WIDTH - player.rect.w) player.rect.x = SCREEN_WIDTH - player.rect.w;
+
+            //renderText(renderer, " < ", SCREEN_WIDTH - 45, 45, font, 45);
         }
 
         spawnPowerUps(player);
+
+        if (e.type == SDL_MOUSEBUTTONDOWN) {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            if (mouseX >= 0 && mouseX <= SCREEN_WIDTH - 50 && mouseY >= 0 && mouseY <= SCREEN_HEIGHT + 50) {
+                gameState = previousGameState;
+            }
+        }
     }
     else if (gameState == GAME_OVER) {
         if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -576,11 +586,11 @@ void renderGame(SDL_Renderer* renderer, GameState gameState, Player& player) {
         // Render map selection menu
         renderText(renderer, " ", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 50, font, 70);
         renderText(renderer, " < ", 45, 45, font, 45);
-
-        for (int i = 0; i < mapOptions.size(); ++i) {
-            int optionY = 100 + i * 2 * 50; // Adjust the vertical position of each option
-            renderText(renderer, "Map " + std::to_string(i + 1), 350, optionY, font, 28);
-        }
+        renderText(renderer, "1. Vibrant ", 350, 100, font, 28); // 100 + 0 
+        renderText(renderer, "2. Golden ", 350, 200, font, 28);// 100 + 1* 2 * 50
+        renderText(renderer, "3. Sweet  ", 350, 300, font, 28); 
+        renderText(renderer, "4. Swamp ", 350, 400, font, 28); 
+        renderText(renderer, "5. Ice-Age ", 350, 500, font, 28);
     }
     else if (gameState == RULE) {
         renderText(renderer, " < ", 45, 45, font, 45);
@@ -616,6 +626,7 @@ void renderGame(SDL_Renderer* renderer, GameState gameState, Player& player) {
         renderEnemies(renderer);
         renderPowerUps(renderer);
         renderHealthBar(renderer, player);
+        renderText(renderer, " < ", SCREEN_WIDTH - 45, 45, font, 45);
         renderText(renderer, "POINTS: " + std::to_string(player.points), 100, 20, font, 28);
     }
 
