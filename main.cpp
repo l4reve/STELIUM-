@@ -3,15 +3,27 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <string>
 #include <ctime> 
+using namespace std;
 
 const int SCREEN_WIDTH = 700;
 const int SCREEN_HEIGHT = 700;
 
-enum GameState { TITLE_SCREEN, PLAYING, LEVEL_UP, GAME_OVER };
+enum GameState { TITLE_SCREEN, PLAYING, LEVEL_UP, GAME_OVER, BACKGROUND_SELECTION, RULE,  WIN };
+
+bool mapSelection = false;
+
+std::vector<std::string> mapOptions = {
+    "Image/Space Background_ez.png",
+    "Image/Space Background_2.png",
+    "Image/Space Background_3.png",
+    "Image/Space Background_4.png",
+    "Image/Space Background_5.png"
+};
 
 struct Player {
     SDL_Rect rect;
@@ -46,8 +58,9 @@ SDL_Renderer* renderer = nullptr;
 SDL_Texture* playerTexture = nullptr;
 SDL_Texture* enemyTexture = nullptr;
 SDL_Texture* bulletTexture = nullptr;
-SDL_Texture* powerUpTextures[1] = { nullptr }; 
+SDL_Texture* powerUpTextures[1] = { nullptr };
 SDL_Texture* backgroundTexture = nullptr;
+Mix_Music* backgroundMusic = nullptr;
 TTF_Font* font = nullptr;
 std::vector<Bullet> bullets;
 std::vector<Enemy> enemies;
@@ -66,13 +79,14 @@ void handleCollisions(Player& player, GameState& gameState);
 void handleBulletEnemyCollisions(Player& player);
 void handlePowerUpCollection(Player& player, GameState& currentLevel);
 void renderGame(SDL_Renderer* renderer, GameState gameState, Player& player);
-void renderText(SDL_Renderer* renderer, const std::string& text, int x, int y, TTF_Font* font);
+void renderText(SDL_Renderer* renderer, const std::string& text, int x, int y, TTF_Font* font, int fontSize);
 void renderBullets(SDL_Renderer* renderer);
 void renderEnemies(SDL_Renderer* renderer);
 void renderPowerUps(SDL_Renderer* renderer);
 void renderHealthBar(SDL_Renderer* renderer, Player& player);
 bool checkCollision(SDL_Rect a, SDL_Rect b);
 void shootBullet(Player& player);
+int highScore = 0;
 
 int main(int argc, char* args[]) {
     if (!initSDL()) {
@@ -92,7 +106,7 @@ int main(int argc, char* args[]) {
     enemyTexture = loadTexture("Image/Gray1.png", renderer);
     bulletTexture = loadTexture("Image/bullet.png", renderer);
     powerUpTextures[0] = loadTexture("Image/powerup2.png", renderer);
-    backgroundTexture = loadTexture("Image/Space Background_med.png", renderer);
+    backgroundTexture = loadTexture("Image/Space Background_med(2).png", renderer);
 
     if (!playerTexture || !enemyTexture || !bulletTexture || !powerUpTextures[0] || !backgroundTexture) {
         std::cerr << "Failed to load media!" << std::endl;
@@ -187,7 +201,7 @@ void closeSDL() {
     window = nullptr;
     renderer = nullptr;
 
-    Mix_CloseAudio(); 
+    Mix_CloseAudio();
 
     TTF_Quit();
     IMG_Quit();
@@ -210,6 +224,8 @@ SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer) {
     return newTexture;
 }
 
+GameState previousGameState = TITLE_SCREEN;
+
 void handleInput(SDL_Event& e, bool& quit, Player& player, GameState& gameState) {
     if (gameState == TITLE_SCREEN) {
         if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -223,7 +239,44 @@ void handleInput(SDL_Event& e, bool& quit, Player& player, GameState& gameState)
                 // Clicked on QUIT button
                 quit = true;
             }
+            else if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 100 && mouseY <= SCREEN_HEIGHT / 2 + 125) {
+                // Clicked on MAP button
+                mapSelection = true;
+                gameState = BACKGROUND_SELECTION;
+            }
+            else if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 100 && mouseY <= SCREEN_HEIGHT / 2 + 175)
+            {
+                gameState = RULE;
+            }
         }
+    }
+    else if (gameState == BACKGROUND_SELECTION) {
+        if (e.type == SDL_MOUSEBUTTONDOWN) {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            for (int i = 0; i < mapOptions.size(); ++i) {
+                int optionY = 100 + i * 2 * 50; // Adjust the vertical position of each option
+                if (mouseX >= 200 && mouseX <= 500 && mouseY >= optionY && mouseY <= optionY + 40) {
+                    backgroundTexture = loadTexture(mapOptions[i], renderer); // Load selected background
+                    mapSelection = false;
+                    gameState = PLAYING; // Start the game
+                    break;
+                }
+            }
+            if (mouseX >= 0 && mouseX <= SCREEN_WIDTH - 650 && mouseY >= 0 && mouseY <= SCREEN_HEIGHT - 650) {
+                gameState = previousGameState;
+            }
+        }
+    }
+    else if (gameState == RULE) {
+        if (e.type == SDL_MOUSEBUTTONDOWN) {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            if (mouseX >= 0 && mouseX <= SCREEN_WIDTH - 650 && mouseY >= 0 && mouseY <= SCREEN_HEIGHT - 650) {
+                gameState = previousGameState;
+            }
+        }
+
     }
     else if (gameState == PLAYING) {
         if (e.type == SDL_MOUSEMOTION) {
@@ -234,7 +287,7 @@ void handleInput(SDL_Event& e, bool& quit, Player& player, GameState& gameState)
             if (player.rect.x < 0) player.rect.x = 0;
             if (player.rect.x > SCREEN_WIDTH - player.rect.w) player.rect.x = SCREEN_WIDTH - player.rect.w;
         }
-        
+
         spawnPowerUps(player);
     }
     else if (gameState == GAME_OVER) {
@@ -247,6 +300,8 @@ void handleInput(SDL_Event& e, bool& quit, Player& player, GameState& gameState)
                 // Reset player's attributes
                 player.health = player.maxHealth;
                 player.points = 0;
+                Mix_PlayMusic(backgroundMusic, -1);
+
             }
             else if (mouseX >= SCREEN_WIDTH / 2 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 110 && mouseY <= SCREEN_HEIGHT / 2 + 150) {
                 // Clicked on "QUIT" button
@@ -295,15 +350,18 @@ void updateGame(Player& player, GameState& gameState) {
 
         // Check and update background based on player's score 
         // HARD : 200 && MED : 60 
-        if (player.points >= 200) {
+        if (player.points >= 300) {
             backgroundTexture = loadTexture("Image/Space Background_hard.png", renderer);
         }
-        else if (player.points >= 60) {
-            backgroundTexture = loadTexture("Image/Space Background_ez.png", renderer);
+        else if (player.points >= 100) {
+            backgroundTexture = loadTexture("Image/Space Background_med.png", renderer);
+
+        }
+        if (player.points >= 1500) {
+            gameState = WIN;
         }
     }
     else if (gameState == GAME_OVER) {
-        // Stop the music when the game is over
         Mix_HaltMusic();
     }
 }
@@ -317,17 +375,17 @@ void shootBullet(Player& player) {
 }
 
 void spawnEnemies(Player& player) {
-    int spawnRate = 1500; // Adjust difficulty
+    int spawnRate = 500; // Adjust difficulty
     int speed = 2;
-   
+
     // Gradually decrease spawn rate and increase speed
     if (player.points >= 60) {
-        spawnRate = 800; 
-        speed = 3; 
+        spawnRate = 400;
+        speed = 3;
     }
-    else if (player.points >= 200) {
-        spawnRate = 500; 
-        speed = 4; 
+    else if (player.points >= 100) {
+        spawnRate = 200;
+        speed = 4;
     }
 
     if (rand() % spawnRate == 0) {
@@ -347,16 +405,16 @@ void moveEnemies() {
 
 void spawnPowerUps(Player& player) {
     // Adjust spawn rate and speed based on game progression
-    int spawnRate = 1000; // Initial spawn rate
+    int spawnRate = 300; // Initial spawn rate
     int speed = 2; // Initial speed
 
     // Gradually decrease spawn rate and increase speed
-    if (player.points >= 60) {
-        spawnRate = 750; // Example adjustment based on player's points
+    if (player.points >= 50) {
+        spawnRate = 250; // Example adjustment based on player's points
         speed = 3; // Example adjustment based on player's points
     }
-    else if (player.points >= 200) {
-        spawnRate = 300; // Example adjustment based on player's points
+    else if (player.points >= 100) {
+        spawnRate = 200; // Example adjustment based on player's points
         speed = 4; // Example adjustment based on player's points
     }
 
@@ -382,7 +440,7 @@ void handleCollisions(Player& player, GameState& gameState) {
     // Handle collisions with enemies
     for (auto& enemy : enemies) {
         if (enemy.rect.y >= SCREEN_HEIGHT) {
-            player.health -= 10; // Reduce player's health
+            player.health -= 15; // Reduce player's health
             enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](Enemy& e) { return e.rect.y >= SCREEN_HEIGHT; }), enemies.end()); // Remove the enemy that reached the bottom
         }
     }
@@ -403,12 +461,12 @@ void handleBulletEnemyCollisions(Player& player) {
         bool bulletRemoved = false;
         for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); ) {
             if (checkCollision(bulletIt->rect, enemyIt->rect)) {
-                player.points += 10; // Update points
+                player.points += 5; // Update points
                 enemyIt = enemies.erase(enemyIt); // Remove the enemy
                 bulletIt = bullets.erase(bulletIt); // Remove the bullet
                 bulletRemoved = true;
                 // Increase player's health by 10 for each enemy killed
-                player.health = std::min(player.health + 20, player.maxHealth);
+                player.health = std::min(player.health + 5, player.maxHealth);
                 break;
             }
             else {
@@ -494,6 +552,7 @@ bool checkCollision(SDL_Rect a, SDL_Rect b) {
     return SDL_HasIntersection(&a, &b);
 }
 
+
 void renderGame(SDL_Renderer* renderer, GameState gameState, Player& player) {
     SDL_RenderClear(renderer);
 
@@ -508,12 +567,48 @@ void renderGame(SDL_Renderer* renderer, GameState gameState, Player& player) {
         renderText(renderer, " STELIUM", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50, font, 80); // Adjust font size 
         renderText(renderer, " PLAY", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 50 - 25, font, 28); // Adjust position
         renderText(renderer, " QUIT", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 100 - 25, font, 28); // Adjust position
+        renderText(renderer, " MAP", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150 - 25, font, 28);
+        renderText(renderer, " RULE", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 200 - 25, font, 28);
+
+
+    }
+    else if (gameState == BACKGROUND_SELECTION) {
+        // Render map selection menu
+        renderText(renderer, " ", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 50, font, 70);
+        renderText(renderer, " < ", 45, 45, font, 45);
+
+        for (int i = 0; i < mapOptions.size(); ++i) {
+            int optionY = 100 + i * 2 * 50; // Adjust the vertical position of each option
+            renderText(renderer, "Map " + std::to_string(i + 1), 350, optionY, font, 28);
+        }
+    }
+    else if (gameState == RULE) {
+        renderText(renderer, " < ", 45, 45, font, 45);
+
+        renderText(renderer, "INSTRUCTIONS ", SCREEN_WIDTH / 2 + 40, SCREEN_HEIGHT / 2 - 250, font, 60);
+        renderText(renderer, "B Y   L 4 R E V E ", SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2 - 200, font, 20);
+
+        renderText(renderer, "1. Avoid the meteor ", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 120, font, 25);
+        renderText(renderer, "  or else ya die :)", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 90, font, 25);
+
+        renderText(renderer, " 2. Shoot the enemy to  ", SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2 , font, 25);
+        renderText(renderer, "   gain blood + points", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 30, font, 25);
+
+        renderText(renderer, "3. Use your mouse to", SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2 + 120, font, 25);
+        renderText(renderer, "   fling horizontally", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150, font, 25);
+
     }
     else if (gameState == GAME_OVER) {
         renderText(renderer, "     GAME OVER", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 50, font, 70);
         renderText(renderer, "   " + std::to_string(player.points), SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2, font, 50);
         renderText(renderer, "PLAY AGAIN", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 70, font, 28);
         renderText(renderer, "QUIT", SCREEN_WIDTH / 2 + 10, SCREEN_HEIGHT / 2 + 120, font, 28);
+    }
+    else if (gameState == WIN) {
+        renderText(renderer, "YOU WON!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50, font, 70);
+        renderText(renderer, "POINTS: " + std::to_string(player.points), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, font, 50);
+        renderText(renderer, "PLAY AGAIN", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 70, font, 28);
+        renderText(renderer, "QUIT", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 120, font, 28);
     }
     else {
         // Render bullets, enemies, power-ups, health bar, and points
