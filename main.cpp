@@ -58,8 +58,7 @@ SDL_Renderer* renderer = nullptr;
 SDL_Texture* playerTexture = nullptr;
 SDL_Texture* enemyTexture = nullptr;
 SDL_Texture* bulletTexture = nullptr;
-SDL_Texture* powerUpTextures[1] = { nullptr };
-SDL_Texture* backgroundTexture = nullptr;
+SDL_Texture* powerUpTextures[3] = { nullptr, nullptr, nullptr }; SDL_Texture* backgroundTexture = nullptr;
 Mix_Music* backgroundMusic = nullptr;
 TTF_Font* font = nullptr;
 std::vector<Bullet> bullets;
@@ -105,7 +104,9 @@ int main(int argc, char* args[]) {
     playerTexture = loadTexture("Image/green.png", renderer);
     enemyTexture = loadTexture("Image/Gray1.png", renderer);
     bulletTexture = loadTexture("Image/bullet.png", renderer);
-    powerUpTextures[0] = loadTexture("Image/powerup2.png", renderer);
+    powerUpTextures[0] = loadTexture("Image/powerup1.png", renderer);
+    powerUpTextures[1] = loadTexture("Image/powerup2.png", renderer);
+    powerUpTextures[2] = loadTexture("Image/powerup3.png", renderer);    
     backgroundTexture = loadTexture("Image/Space Background_med(2).png", renderer);
 
     if (!playerTexture || !enemyTexture || !bulletTexture || !powerUpTextures[0] || !backgroundTexture) {
@@ -166,6 +167,10 @@ bool initSDL() {
         return false;
     }
 
+    powerUpTextures[0] = loadTexture("Image/powerup1.png", renderer);
+    powerUpTextures[1] = loadTexture("Image/powerup2.png", renderer);
+    powerUpTextures[2] = loadTexture("Image/powerup3.png", renderer);
+
     if (TTF_Init() == -1) {
         std::cerr << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << std::endl;
         return false;
@@ -193,14 +198,14 @@ void closeSDL() {
     SDL_DestroyTexture(enemyTexture);
     SDL_DestroyTexture(bulletTexture);
     SDL_DestroyTexture(backgroundTexture);
-    for (int i = 0; i < 1; ++i) {
-        SDL_DestroyTexture(powerUpTextures[i]);
-    }
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     window = nullptr;
     renderer = nullptr;
 
+    for (int i = 0; i < 3; ++i) {
+        SDL_DestroyTexture(powerUpTextures[i]);
+    }
     Mix_CloseAudio();
 
     TTF_Quit();
@@ -388,16 +393,16 @@ void shootBullet(Player& player) {
 
 void spawnEnemies(Player& player) {
     int spawnRate = 400; // Adjust difficulty
-    int speed = 2;
+    int speed = 3;
 
     // Gradually decrease spawn rate and increase speed
     if (player.points >= 60) {
         spawnRate = 300;
-        speed = 3;
+        speed = 4;
     }
     else if (player.points >= 100) {
         spawnRate = 200;
-        speed = 4;
+        speed = 5;
     }
 
     if (rand() % spawnRate == 0) {
@@ -416,29 +421,27 @@ void moveEnemies() {
 }
 
 void spawnPowerUps(Player& player) {
-    // Adjust spawn rate and speed based on game progression
-    int spawnRate = 200; // Initial spawn rate
-    int speed = 2; // Initial speed
+    int spawnRate = 200;
+    int speed = 3;
 
-    // Gradually decrease spawn rate and increase speed
     if (player.points >= 50) {
-        spawnRate = 155; // Example adjustment based on player's points
-        speed = 3; // Example adjustment based on player's points
+        spawnRate = 155;
+        speed = 4;
     }
     else if (player.points >= 100) {
-        spawnRate = 120; // Example adjustment based on player's points
-        speed = 4; // Example adjustment based on player's points
+        spawnRate = 120;
+        speed = 5;
     }
 
-    // Spawn power-up
     if (rand() % spawnRate == 0) {
         PowerUp powerUp;
         powerUp.rect = { rand() % (SCREEN_WIDTH - 30), 0, 30, 30 };
-        powerUp.type = 0; // For simplicity, always spawn the same type of power-up
-        powerUp.speed = speed; // Adjust speed for difficulty
+        powerUp.type = rand() % 3; // Randomly assign one of the three power-up types
+        powerUp.speed = speed;
         powerUps.push_back(powerUp);
     }
 }
+
 
 void movePowerUps() {
     // Move power-ups and remove them if they go out of screen
@@ -507,14 +510,25 @@ void handlePowerUpCollection(Player& player, GameState& gameState) {
 void handlePowerUpCollection(Player& player, GameState& gameState) {
     for (auto powerUpIt = powerUps.begin(); powerUpIt != powerUps.end(); ) {
         if (checkCollision(player.rect, powerUpIt->rect)) {
-            player.health -= 10; // Decrease health when a power-up is collected
-            powerUpIt = powerUps.erase(powerUpIt); // Remove the power-up
+            switch (powerUpIt->type) {
+            case 0:
+                player.health -= 10;
+                break;
+            case 1:
+                player.health -= 20;
+                break;
+            case 2:
+                player.health += 10; // increase points
+                break;
+            }
+            powerUpIt = powerUps.erase(powerUpIt); 
         }
         else {
             ++powerUpIt;
         }
     }
 }
+
 
 void renderBullets(SDL_Renderer* renderer) {
     for (const auto& bullet : bullets) {
@@ -533,6 +547,7 @@ void renderPowerUps(SDL_Renderer* renderer) {
         SDL_RenderCopy(renderer, powerUpTextures[powerUp.type], nullptr, &powerUp.rect);
     }
 }
+
 
 void renderHealthBar(SDL_Renderer* renderer, Player& player) {
     SDL_Rect healthBarBack = { 10, 50, 200, 20 }; // Background of the health bar
@@ -609,16 +624,18 @@ void renderGame(SDL_Renderer* renderer, GameState gameState, Player& player) {
         renderText(renderer, "3. Use your mouse to", SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2 + 120, font, 25);
         renderText(renderer, "   fling horizontally", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150, font, 25);
 
+        renderText(renderer, "4. Green is blood.", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 240, font, 25);
+
     }
     else if (gameState == GAME_OVER) {
         renderText(renderer, "     GAME OVER", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 50, font, 70);
-        renderText(renderer, "   " + std::to_string(player.points), SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2, font, 50);
+        renderText(renderer, "   " + std::to_string(player.points), SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 10, font, 50);
         renderText(renderer, "PLAY AGAIN", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 70, font, 28);
         renderText(renderer, "QUIT", SCREEN_WIDTH / 2 + 10, SCREEN_HEIGHT / 2 + 120, font, 28);
     }
     else if (gameState == WIN) {
         renderText(renderer, "YOU WON!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50, font, 70);
-        renderText(renderer, "POINTS: " + std::to_string(player.points), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, font, 50);
+        renderText(renderer, "SCORE: " + std::to_string(player.points), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 10, font, 50);
         renderText(renderer, "PLAY AGAIN", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 70, font, 28);
         renderText(renderer, "QUIT", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 120, font, 28);
     }
