@@ -13,12 +13,12 @@ using namespace std;
 const int SCREEN_WIDTH = 700;
 const int SCREEN_HEIGHT = 700;
 
-enum GameState { TITLE_SCREEN, PLAYING, LEVEL_UP, GAME_OVER, BACKGROUND_SELECTION, RULE,  WIN };
+enum GameState { TITLE_SCREEN, PLAYING, LEVEL_UP, GAME_OVER, BACKGROUND_SELECTION, RULE, WIN };
 
 bool mapSelection = false;
 
 std::vector<std::string> mapOptions = {
-    "Image/Space Background_ez.png",
+    "Image/Space Background_1.png",
     "Image/Space Background_2.png",
     "Image/Space Background_3.png",
     "Image/Space Background_4.png",
@@ -238,13 +238,14 @@ void handleInput(SDL_Event& e, bool& quit, Player& player, GameState& gameState)
             else if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 50 && mouseY <= SCREEN_HEIGHT / 2 + 75) {
                 // Clicked on QUIT button
                 quit = true;
+                Mix_HaltMusic();
             }
-            else if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 100 && mouseY <= SCREEN_HEIGHT / 2 + 125) {
+            else if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 100 && mouseY <= SCREEN_HEIGHT / 2 + 130) {
                 // Clicked on MAP button
                 mapSelection = true;
                 gameState = BACKGROUND_SELECTION;
             }
-            else if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 100 && mouseY <= SCREEN_HEIGHT / 2 + 175)
+            else if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 135 && mouseY <= SCREEN_HEIGHT / 2 + 175)
             {
                 gameState = RULE;
             }
@@ -316,6 +317,7 @@ void handleInput(SDL_Event& e, bool& quit, Player& player, GameState& gameState)
             else if (mouseX >= SCREEN_WIDTH / 2 && mouseX <= SCREEN_WIDTH / 2 + 50 && mouseY >= SCREEN_HEIGHT / 2 + 110 && mouseY <= SCREEN_HEIGHT / 2 + 150) {
                 // Clicked on "QUIT" button
                 quit = true;
+                Mix_HaltMusic();
             }
         }
     }
@@ -371,9 +373,9 @@ void updateGame(Player& player, GameState& gameState) {
             gameState = WIN;
         }
     }
-    else if (gameState == GAME_OVER) {
+    /*else if (gameState == GAME_OVER) {
         Mix_HaltMusic();
-    }
+    }*/
 }
 
 
@@ -385,12 +387,12 @@ void shootBullet(Player& player) {
 }
 
 void spawnEnemies(Player& player) {
-    int spawnRate = 500; // Adjust difficulty
+    int spawnRate = 400; // Adjust difficulty
     int speed = 2;
 
     // Gradually decrease spawn rate and increase speed
     if (player.points >= 60) {
-        spawnRate = 400;
+        spawnRate = 300;
         speed = 3;
     }
     else if (player.points >= 100) {
@@ -415,16 +417,16 @@ void moveEnemies() {
 
 void spawnPowerUps(Player& player) {
     // Adjust spawn rate and speed based on game progression
-    int spawnRate = 300; // Initial spawn rate
+    int spawnRate = 200; // Initial spawn rate
     int speed = 2; // Initial speed
 
     // Gradually decrease spawn rate and increase speed
     if (player.points >= 50) {
-        spawnRate = 250; // Example adjustment based on player's points
+        spawnRate = 155; // Example adjustment based on player's points
         speed = 3; // Example adjustment based on player's points
     }
     else if (player.points >= 100) {
-        spawnRate = 200; // Example adjustment based on player's points
+        spawnRate = 120; // Example adjustment based on player's points
         speed = 4; // Example adjustment based on player's points
     }
 
@@ -627,7 +629,7 @@ void renderGame(SDL_Renderer* renderer, GameState gameState, Player& player) {
         renderPowerUps(renderer);
         renderHealthBar(renderer, player);
         renderText(renderer, " < ", SCREEN_WIDTH - 45, 45, font, 45);
-        renderText(renderer, "POINTS: " + std::to_string(player.points), 100, 20, font, 28);
+        renderText(renderer, "POINTS: " + std::to_string(player.points), 100, 25, font, 28);
     }
 
     SDL_RenderPresent(renderer);
