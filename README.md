@@ -71,7 +71,7 @@
 
 - Người chơi có thể chọn chơi lại bằng cách nhấn "PLAY AGAIN" hoặc thoát bằng "QUIT"
 
-![image](https://github.com/l4reve/txtms/assets/143638421/72c088d6-9807-4d7f-b136-71ce35a3ca0b)
+![image](https://github.com/l4reve/txtms/assets/143638421/9160b07d-e1f9-4ce6-a3d7-778182d3c56c)
 
 🎮🎮🎮
 
