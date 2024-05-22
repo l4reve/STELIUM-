@@ -58,7 +58,7 @@ SDL_Renderer* renderer = nullptr;
 SDL_Texture* playerTexture = nullptr;
 SDL_Texture* enemyTexture = nullptr;
 SDL_Texture* bulletTexture = nullptr;
-SDL_Texture* powerUpTextures[3] = { nullptr, nullptr, nullptr }; 
+SDL_Texture* powerUpTextures[3] = { nullptr, nullptr, nullptr };
 SDL_Texture* backgroundTexture = nullptr;
 Mix_Music* backgroundMusic = nullptr;
 TTF_Font* font = nullptr;
@@ -393,15 +393,15 @@ void shootBullet(Player& player) {
 }
 
 void spawnEnemies(Player& player) {
-    int spawnRate = 400; // Adjust difficulty
-    int speed = 3;
+    int spawnRate = 350; // Adjust difficulty
+    int speed = 2;
 
     // Gradually decrease spawn rate and increase speed
-    if (player.points >= 60) {
-        spawnRate = 300;
-        speed = 4;
+    if (player.points >= 100) {
+        spawnRate = 250;
+        speed = 3;
     }
-    else if (player.points >= 100) {
+    else if (player.points >= 200) {
         spawnRate = 200;
         speed = 5;
     }
@@ -409,7 +409,7 @@ void spawnEnemies(Player& player) {
     if (rand() % spawnRate == 0) {
         Enemy enemy;
         enemy.rect = { rand() % (SCREEN_WIDTH - 50), 0, 50, 50 };
-        enemy.speed = 2; // Adjust speed for difficulty
+        enemy.speed = speed; // Adjust speed for difficulty
         enemies.push_back(enemy);
     }
 }
@@ -422,15 +422,15 @@ void moveEnemies() {
 }
 
 void spawnPowerUps(Player& player) {
-    int spawnRate = 200;
-    int speed = 3;
+    int spawnRate = 250;
+    int speed = 2;
 
-    if (player.points >= 50) {
-        spawnRate = 155;
-        speed = 4;
+    if (player.points >= 100) {
+        spawnRate = 200;
+        speed = 3;
     }
-    else if (player.points >= 100) {
-        spawnRate = 120;
+    else if (player.points >= 200) {
+        spawnRate = 100;
         speed = 5;
     }
 
@@ -481,7 +481,6 @@ void handleBulletEnemyCollisions(Player& player) {
                 enemyIt = enemies.erase(enemyIt); // Remove the enemy
                 bulletIt = bullets.erase(bulletIt); // Remove the bullet
                 bulletRemoved = true;
-                // Increase player's health by 10 for each enemy killed
                 player.health = std::min(player.health + 5, player.maxHealth);
                 break;
             }
@@ -513,13 +512,13 @@ void handlePowerUpCollection(Player& player, GameState& gameState) {
         if (checkCollision(player.rect, powerUpIt->rect)) {
             switch (powerUpIt->type) {
             case 0:
-                player.health -= 10;
+                player.health -= 15;
                 break;
             case 1:
-                player.health -= 20;
+                player.health -= 30;
                 break;
             case 2:
-                player.health += 10; // increase points
+                player.health += 5; // increase points
                 break;
             }
             powerUpIt = powerUps.erase(powerUpIt); 
