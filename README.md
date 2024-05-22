@@ -6,7 +6,9 @@
 
 ![image](https://github.com/l4reve/txtms/assets/143638421/cc15596f-6da2-42a7-a542-03cf96e449bf)
 
-## Tổng Quan
+> :> HI THERE PLS READ
+
+# INTRO
 
 "Stelium" là một trò chơi điện tử thuộc thể loại bắn súng không gian, được thiết kế để mang lại trải nghiệm giải trí đầy kịch tính và hấp dẫn. Người chơi sẽ điều khiển một phi thuyền và đối đầu với các kẻ thù không gian, thu thập các vật phẩm sức mạnh, và tránh những thiên thạch nguy hiểm. Mục tiêu của trò chơi là đạt được số điểm cao nhất có thể trong khi giữ cho phi thuyền của bạn không bị phá hủy.
 
